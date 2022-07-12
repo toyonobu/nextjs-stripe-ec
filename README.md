@@ -1,3 +1,9 @@
+# About
+このリポジトリは以下の参考サイトの写経です
+
+- [Next.jsとStripeではじめるシンプルなECサイト開発ワークショップ](https://zenn.dev/stripe/books/stripe-nextjs-use-shopping-cart) by Hidetaka Okamoto(Stripe)様  
+
+---
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started

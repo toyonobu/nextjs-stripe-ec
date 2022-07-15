@@ -1,19 +1,40 @@
-export default function handler(req, res)
+import Stripe from "stripe"
+
+export default async function handler(req, res)
 {
   if (req.method.toLocaleLowerCase() !== "get" ) {
     return res.status(405).end()
   }
+  const stripe = new Stripe(process.env.STRIPE_API_KEY,{
+    apiVersion: "2020-08-27",
+    maxNetworkRetries: 3
+  })
 
-  res.status(200).json(
-    [
-      {
-        name:"胡麻鯖セット",
-        price: 5000,
-      },
-      {
-        name:"明太子詰め合わせ",
-        price: 6000,
-      },
-    ]
-  )
+  const products = await stripe.products.list()
+  if (!products.data || products.data.length < 1) {
+    return res.status(200).json([])
+  }
+  
+  const response = await Promise.all(products.data.map(async (product, i) => {
+    const prices = await stripe.prices.list({
+      product: product.id
+    })
+    return {
+      id: product.id,
+      description: product.description,
+      name: product.name,
+      images: product.images,
+      unit_label: product.unit_label,
+      prices: prices.data.map(price => {
+        return {
+          id: price.id,
+          currency: price.currency,
+          trasform_quantity: price.trasform_quantity,
+          unit_amount: price.unit_amount,
+        }
+      })
+    }
+  }))
+
+  res.status(200).json(response)
 }
